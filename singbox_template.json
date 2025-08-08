@@ -1,0 +1,424 @@
+{
+    "log": {
+      "disabled": false,
+      "level": "debug",
+      "output" : "/etc/sing-box/box.log",
+      "timestamp": true
+    },
+    "experimental": {
+      "clash_api": {
+        "external_controller": "192.168.8.3:9090",
+        "external_ui": "/etc/sing-box/ui",
+        "external_ui_download_url": "https://ghfast.top/https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip",
+        "external_ui_download_detour": "direct",
+        "secret": "",
+        "default_mode": "Rule",
+        "access_control_allow_origin": [],
+        "access_control_allow_private_network": true
+      },
+      "cache_file": {
+        "enabled": true,
+        "path": "/etc/sing-box/cache.db",
+        "cache_id": "",
+        "store_fakeip": false,
+        "store_rdrc": true,
+        "rdrc_timeout": "7d"
+      }
+    },
+    "dns": {
+      "servers": [
+        {
+          "tag": "default-dns",
+          "address": "https://223.5.5.5/dns-query",
+          "address_resolver": "default-dns-resolver",
+          "strategy": "prefer_ipv4",
+          "detour": "direct"
+        },
+        {
+          "tag": "default-dns-resolver",
+          "address": "223.5.5.5",
+          "strategy": "prefer_ipv4",
+          "detour": "direct"
+        },
+        {
+          "tag": "google-dns",
+          "address": "https://8.8.8.8/dns-query",
+          "address_resolver": "default-dns-resolver",
+          "strategy": "prefer_ipv4",
+          "detour": "select"
+        }
+      ],
+      "rules": [
+        {
+          "outbound": "any",
+          "action": "route",
+          "server": "default-dns"
+        },
+        {
+          "clash_mode": "Direct",
+          "action": "route",
+          "server": "default-dns"
+        },
+        {
+          "clash_mode": "Global",
+          "action": "route",
+          "server": "google-dns"
+        },
+        {
+          "rule_set": "geosite-cn",
+          "server": "default-dns"
+        },
+        {
+          "type": "logical",
+          "mode": "and",
+          "rules": [
+            {
+              "rule_set": "geolocation-!cn",
+              "invert": true
+            },
+            {
+              "rule_set": "geoip-cn"
+            }
+          ],
+          "server": "google-dns",
+          "client_subnet": "114.114.114.114/24"
+        }
+      ],
+      "final": "google-dns"
+    },
+    "inbounds": [
+      {
+        "type": "tun",
+        "tag": "tun-in",
+        "interface_name": "tun0",
+        "address": [
+          "172.18.0.1/30",
+          "fdfe:dcba:9876::1/126"
+        ],
+        "mtu": 1500,
+        "auto_route": true,
+        "auto_redirect": true,
+        "strict_route": true,
+        "stack": "system",
+        "platform": {
+          "http_proxy": {
+            "enabled": false,
+            "server": "127.0.0.1",
+            "server_port": 8080
+          }
+        }
+      }
+    ],
+    "route": {
+      "rules": [
+        {
+          "action": "sniff"
+        },
+        {
+          "protocol": "dns",
+          "action": "hijack-dns"
+        },
+        {
+          "ip_is_private": true,
+          "outbound": "direct"
+        },
+        {
+          "action": "route",
+          "clash_mode": "Direct",
+          "outbound": "direct"
+        },
+        {
+          "action": "route",
+          "clash_mode": "Global",
+          "outbound": "global"
+        },
+        {
+          "protocol": "quic",
+          "action": "reject"
+        },
+        {
+          "rule_set": [
+            "category-ads-all"
+          ],
+          "action": "reject"
+        },
+        {
+          "rule_set": [
+            "geosite-private"
+          ],
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "domain": [
+            "aur.archlinux.org"
+          ],
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "domain": [
+            "sing-box.sagernet.org"
+          ],
+          "action": "route",
+          "outbound": "auto"
+        },
+        {
+          "rule_set": [
+            "github"
+          ],
+          "action": "route",
+          "outbound": "github"
+        },
+        {
+          "rule_set": [
+            "spotify"
+          ],
+          "action": "route",
+          "outbound": "special_US"
+        },
+        {
+          "rule_set": [
+            "geosite-cn"
+          ],
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "rule_set": [
+            "geoip-cn"
+          ],
+          "action": "route",
+          "outbound": "direct"
+        },
+        {
+          "rule_set": [
+            "geolocation-!cn"
+          ],
+          "action": "route",
+          "outbound": "select"
+        }
+      ],
+      "rule_set": [
+        {
+          "tag": "category-ads-all",
+          "type": "remote",
+          "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-ads-all.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        },
+        {
+          "tag": "geoip-private",
+          "type": "remote",
+          "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/private.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        },
+        {
+          "tag": "geosite-private",
+          "type": "remote",
+          "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/private.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        },
+        {
+          "tag": "geoip-cn",
+          "type": "remote",
+          "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        },
+        {
+          "tag": "geosite-cn",
+          "type": "remote",
+          "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/cn.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        },
+        {
+          "tag": "geolocation-!cn",
+          "type": "remote",
+          "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        },
+        {
+          "tag": "github",
+          "type": "remote",
+          "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/github.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        },
+        {
+          "tag": "geosite-gfw",
+          "type": "remote",
+          "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/gfw.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        },
+        {
+          "tag": "spotify",
+          "type": "remote",
+          "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/spotify.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        }
+      ],
+      "final": "fallback",
+      "auto_detect_interface": true
+    },
+    "outbounds": [
+      {
+        "type": "selector",
+        "tag": "select",
+        "interrupt_exist_connections": true,
+        "outbounds": [
+          "HK",
+          "JP",
+          "US"
+        ]
+      },
+      {
+        "type": "urltest",
+        "tag": "auto",
+        "url": "https://www.gstatic.com/generate_204",
+        "interval": "3m",
+        "tolerance": 150,
+        "interrupt_exist_connections": true,
+        "outbounds": [
+            "{all}"
+        ],
+        "filter": [
+        {
+          "action": "include",
+          "keywords": [
+            "🇯🇵|日本|JP|Japan|🇰🇷|韩国|KR|South Korea|🇹🇼|台湾|TW|Taiwan|🇸🇬|新加坡|SG|Singapore|🇺🇸|美国|US|USA|United States|马来西亚|🇭🇰|香港|HK|Hong Kong"
+          ]
+        }
+      ]
+      },
+      {
+        "type": "urltest",
+        "tag": "HK",
+        "url": "https://www.gstatic.com/generate_204",
+        "interval": "3m",
+        "tolerance": 150,
+        "interrupt_exist_connections": true,
+        "outbounds": [
+            "{all}"
+        ],
+        "filter": [
+        {
+          "action": "include",
+          "keywords": [
+            "🇭🇰|香港|HK|Hong Kong"
+          ]
+        }
+      ]
+      },
+      {
+        "type": "urltest",
+        "tag": "JP",
+        "url": "https://www.gstatic.com/generate_204",
+        "interval": "3m",
+        "tolerance": 150,
+        "interrupt_exist_connections": true,
+        "outbounds": [
+            "{all}"
+        ],
+        "filter": [
+        {
+          "action": "include",
+          "keywords": [
+            "🇯🇵|日本|JP|Japan"
+          ]
+        }
+      ]
+      },
+      {
+        "type": "urltest",
+        "tag": "US",
+        "url": "https://www.gstatic.com/generate_204",
+        "interval": "3m",
+        "tolerance": 150,
+        "interrupt_exist_connections": true,
+        "outbounds": [
+            "{all}"
+        ],
+        "filter": [
+        {
+          "action": "include",
+          "keywords": [
+            "🇺🇸|美国|US|USA|United States"
+          ]
+        }
+      ]
+      },
+      {
+        "type": "urltest",
+        "tag": "Others",
+        "url": "https://www.gstatic.com/generate_204",
+        "interval": "3m",
+        "tolerance": 150,
+        "interrupt_exist_connections": true,
+        "outbounds": [
+            "{all}"
+        ],
+        "filter": [
+        {
+          "action": "include",
+          "keywords": [
+            "🇰🇷|韩国|KR|South Korea|🇹🇼|台湾|TW|Taiwan|🇸🇬|新加坡|SG|Singapore|马来西亚"
+          ]
+        }
+      ]
+      },
+      {
+        "type": "direct",
+        "tag": "direct"
+      },
+      {
+        "type": "selector",
+        "tag": "fallback",
+        "interrupt_exist_connections": true,
+        "outbounds": [
+          "select",
+          "direct"
+        ]
+      },
+      {
+        "type": "selector",
+        "tag": "GLOBAL",
+        "interrupt_exist_connections": true,
+        "outbounds": [
+          "select",
+          "auto",
+          "HK",
+          "US",
+          "JP",
+          "Others"
+        ]
+      },
+      {
+        "type": "selector",
+        "tag": "github",
+        "interrupt_exist_connections": true,
+        "outbounds": [
+          "select",
+          "auto",
+          "HK",
+          "JP",
+          "US",
+          "Others"
+        ]
+      },
+      {
+        "type": "selector",
+        "tag": "special_US",
+        "interrupt_exist_connections": true,
+        "outbounds": [
+          "US"
+        ]
+      }
+    ]
+  }
