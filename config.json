@@ -310,35 +310,35 @@
           "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/bilibili.srs",
           "format": "binary",
           "download_detour": "direct"
-        },
+        }, 
         {
         "tag": "google",
         "type": "remote",
         "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geoip/google.srs",
         "format": "binary",
         "download_detour": "direct"
-      },  
-      {
+        }, 
+        {
         "tag": "google_site",
         "type": "remote",
         "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/google.srs",
         "format": "binary",
         "download_detour": "direct"
-      },     
-      {
+        },
+        {
         "tag": "youtube",
         "type": "remote",
         "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/youtube.srs",
         "format": "binary",
         "download_detour": "direct"
-      },         
-      {
+        },
+        {
           "tag": "spotify",
           "type": "remote",
           "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/spotify.srs",
           "format": "binary",
           "download_detour": "direct"
-       }
+        }
       ],
       "final": "fallback",
       "auto_detect_interface": true
@@ -498,4 +498,3 @@
       }
     ]
   }
-
