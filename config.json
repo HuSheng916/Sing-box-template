@@ -130,7 +130,7 @@
         {
           "action": "route",
           "clash_mode": "Global",
-          "outbound": "global"
+          "outbound": "GLOBAL"
         },
         {
           "protocol": "quic",
@@ -168,18 +168,35 @@
             "github"
           ],
           "action": "route",
-          "outbound": "github"
+          "outbound": "auto"
         },
         {
           "rule_set": [
             "spotify"
           ],
           "action": "route",
-          "outbound": "special_US"
+          "outbound": "US"
         },
         {
           "rule_set": [
-            "geosite-cn"
+            "OpenAI"
+          ],
+          "action": "route",
+          "outbound": "US"
+        },      
+        {
+          "rule_set": [
+            "Netflix",
+            "Netflix_site",
+            "disney"
+          ],
+          "action": "route",
+          "outbound": "US"
+        },  
+        {
+          "rule_set": [
+            "geosite-cn",
+            "bilibili"
           ],
           "action": "route",
           "outbound": "direct"
@@ -257,6 +274,41 @@
           "download_detour": "direct"
         },
         {
+          "tag": "OpenAI",
+          "type": "remote",
+          "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/openai.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        }, 
+        {
+          "tag": "Netflix",
+          "type": "remote",
+          "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geoip/netflix.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        },    
+        {
+          "tag": "Netflix_site",
+          "type": "remote",
+          "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/netflix.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        },   
+        {
+          "tag": "disney",
+          "type": "remote",
+          "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/disney.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        },      
+        {
+          "tag": "bilibili",
+          "type": "remote",
+          "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/bilibili.srs",
+          "format": "binary",
+          "download_detour": "direct"
+        },         
+        {
           "tag": "spotify",
           "type": "remote",
           "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/spotify.srs",
@@ -275,7 +327,9 @@
         "outbounds": [
           "HK",
           "JP",
-          "US"
+          "US",
+          "SG",
+          "Others"
         ]
       },
       {
@@ -401,7 +455,7 @@
         "tag": "fallback",
         "interrupt_exist_connections": true,
         "outbounds": [
-          "select",
+          "auto",
           "direct"
         ]
       },
@@ -416,27 +470,6 @@
           "US",
           "JP",
           "Others"
-        ]
-      },
-      {
-        "type": "selector",
-        "tag": "github",
-        "interrupt_exist_connections": true,
-        "outbounds": [
-          "select",
-          "auto",
-          "HK",
-          "JP",
-          "US",
-          "Others"
-        ]
-      },
-      {
-        "type": "selector",
-        "tag": "special_US",
-        "interrupt_exist_connections": true,
-        "outbounds": [
-          "US"
         ]
       }
     ]
