@@ -199,7 +199,8 @@
         {
           "rule_set": [
             "geosite-cn",
-            "bilibili"
+            "bilibili",
+            "CCTV"
           ],
           "action": "route",
           "outbound": "direct"
@@ -332,6 +333,13 @@
         "format": "binary",
         "download_detour": "direct"
         },
+        {
+        "tag": "CCTV",
+        "type": "remote",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/cctv.srs",
+        "format": "binary",
+        "download_detour": "direct"
+        },        
         {
           "tag": "spotify",
           "type": "remote",
